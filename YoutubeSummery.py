@@ -1,6 +1,6 @@
 from youtube_transcript_api import YouTubeTranscriptApi
 import streamlit as st
-from lama import LLM
+from lama import process_large_transcript
 
 
 st.set_page_config(page_title="Videonotes! 🎥", page_icon="📝", layout="centered")
@@ -59,11 +59,13 @@ if(url):
                 break  
 
             Subs = YouTubeTranscriptApi.get_transcript(video_id, languages=[lang])
-            with st.spinner('Processing...'):
-                result = LLM(Subs) 
-            st.subheader("Generated Content:")
-
-            st.write(result.content)
+            try:
+                with st.spinner('Processing...'):
+                    result = process_large_transcript(Subs) 
+                st.subheader("Generated Content:")
+            except:
+                st.info("Video is too long.")
+            st.write(result)
         except:
             st.info("Sub Title Not Found")
     except :
